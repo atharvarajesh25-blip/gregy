@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>TS — Personal OS v4</title>
+<style>
+:root{--bg:#f6f6f3;--panel:#fff;--ink:#111;--muted:#777;--line:#deded9;--soft:#f0f0ec;--dark:#111;--radius:16px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}
+aside{width:230px;background:#0d0d0d;color:#fff;padding:22px 14px;position:fixed;inset:0 auto 0 0;z-index:20}
+.logo{font-weight:800;font-size:22px;letter-spacing:-.04em;padding:0 10px 25px}.logo span{color:#777}
+.nav{display:grid;gap:4px}.nav button{border:0;background:transparent;color:#aaa;text-align:left;padding:10px 12px;border-radius:10px}.nav button:hover,.nav button.active{background:#202020;color:#fff}.nav .section{font-size:10px;color:#555;letter-spacing:.14em;margin:18px 12px 5px}
+main{margin-left:230px;width:calc(100% - 230px);min-height:100vh}.top{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(246,246,243,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:10}
+.top-title{display:flex;align-items:center;gap:8px}.mobile-back{display:none}.top h1{font-size:18px;margin:0;letter-spacing:-.02em}.top .sub{font-size:12px;color:var(--muted);margin-top:3px}.top-actions{display:flex;gap:7px}
+.iconbtn,.btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 11px}.iconbtn{width:36px;height:36px;padding:0}.btn.primary{background:#111;color:#fff;border-color:#111}.btn.danger{color:#a33}.btn.small{padding:6px 8px;font-size:12px}
+.content{padding:26px;max-width:1450px;margin:auto}.page{display:none}.page.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-7{grid-column:span 7}.span-6{grid-column:span 6}.span-5{grid-column:span 5}.span-4{grid-column:span 4}.span-3{grid-column:span 3}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:17px}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.head h2{font-size:14px;margin:0}.muted,.small{color:var(--muted)}.small{font-size:12px}.big{font-size:29px;font-weight:750;letter-spacing:-.05em}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi{background:var(--soft);border-radius:12px;padding:13px}.kpi .label{font-size:10px;color:var(--muted);letter-spacing:.08em}.kpi .value{font-size:22px;font-weight:750;margin-top:4px}
+.row{display:flex;align-items:center;gap:9px}.between{justify-content:space-between}.stack{display:grid;gap:9px}.form{display:flex;gap:8px;flex-wrap:wrap}.form input,.form select,.form textarea,.search input{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 10px;outline:none}.form textarea{width:100%;min-height:90px}.form input:focus,.form select:focus,.form textarea:focus{border-color:#999}
+.list{display:grid;gap:7px}.item{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff}.item:hover{background:#fcfcfa}.check{width:22px;height:22px;border:1px solid #bbb;border-radius:7px;background:#fff;display:grid;place-items:center;flex:0 0 auto}.check.done{background:#111;color:#fff;border-color:#111}.title{font-weight:650}.tag{font-size:10px;border:1px solid var(--line);border-radius:99px;padding:4px 7px;color:#666;white-space:nowrap}.bar{height:7px;background:#e8e8e4;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:#111;border-radius:99px}.progress{display:grid;gap:6px}.progress-line{display:flex;justify-content:space-between;font-size:12px}.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+.tabs{display:flex;gap:5px;overflow:auto;margin-bottom:14px}.tabs button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:7px 11px;white-space:nowrap}.tabs button.active{background:#111;color:#fff;border-color:#111}
+.datebar{display:flex;align-items:center;gap:8px;margin-bottom:18px}.datebar .date{font-weight:700;min-width:150px;text-align:center}.priority{font-size:10px;font-weight:800}.p1{color:#111}.p2{color:#777}.p3{color:#aaa}
+.connection{position:relative;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff}.connection:after{content:"↓";position:absolute;left:50%;bottom:-15px;color:#aaa;background:var(--bg);padding:0 4px}.connection:last-child:after{display:none}.node-type{font-size:9px;letter-spacing:.1em;color:#888}.node-title{font-weight:700;margin:3px 0}.linkchips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.chip{font-size:11px;background:var(--soft);padding:5px 7px;border-radius:8px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line);font-size:12px}th{color:#777;font-weight:600}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;place-items:center;z-index:50;padding:20px}.modal.open{display:grid}.modalbox{width:min(680px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:20px}.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modalhead h3{margin:0}.x{border:0;background:transparent;font-size:24px}
+.search{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:60;padding:80px 20px}.search.open{display:block}.searchbox{max-width:760px;margin:auto;background:#fff;border-radius:16px;padding:15px}.search input{width:100%;font-size:16px}.results{margin-top:10px;display:grid;gap:4px}.result{padding:10px;border-radius:9px}.result:hover{background:var(--soft)}
+.toast{position:fixed;bottom:22px;right:22px;background:#111;color:#fff;padding:11px 14px;border-radius:10px;opacity:0;transform:translateY(8px);transition:.2s;z-index:80}.toast.show{opacity:1;transform:none}
+.mobile-nav{display:none}.graph{display:grid;grid-template-columns:1fr 30px 1fr;gap:8px;align-items:center}.arrow{text-align:center;color:#999}.mini{font-size:11px;color:#777}
+@media(max-width:900px){.mobile-back{display:block}.top-title{min-width:0}.top-title>div{min-width:0}.top h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}aside{display:none}main{margin:0;width:100%}.top{padding:0 15px}.content{padding:15px}.grid{grid-template-columns:1fr}.span-12,.span-8,.span-7,.span-6,.span-5,.span-4,.span-3{grid-column:span 1}.kpis{grid-template-columns:repeat(2,1fr)}.mobile-nav{display:none}.mobile-nav button{flex:1;min-width:72px;background:transparent;border:0;color:#aaa;padding:9px 5px;font-size:10px}.mobile-nav button.active{color:#fff}.mobile-nav b{display:block;font-size:15px}.top .hide-mobile{display:none}}
+
+/* TS 2026 dashboard redesign — dark Personal OS */
+:root{--bg:#080b0f;--panel:#0d1117;--ink:#f3f6fa;--muted:#8b95a3;--line:#202833;--soft:#151b23;--dark:#f3f6fa;--radius:14px}
+html{background:var(--bg)} body{background:radial-gradient(circle at 60% -10%,#111923 0,#080b0f 42%,#07090c 100%);color:var(--ink)}
+.app{background:transparent} aside{width:200px;background:#080b0f;border-right:1px solid #1c232c;padding:24px 10px;color:#fff}.logo{padding:0 14px 26px;font-size:28px;line-height:1}.logo span{display:block;color:#6f94bc;font-size:11px;letter-spacing:.09em;text-transform:uppercase;margin-top:7px}.nav{gap:3px}.nav .section{color:#5c6570;margin:17px 13px 6px}.nav button{color:#9aa3ae;padding:10px 13px;border-radius:10px;font-size:13px}.nav button:hover,.nav button.active{background:#141a22;color:#f7f9fb;box-shadow:inset 2px 0 #eef3f8}
+main{margin-left:200px;width:calc(100% - 200px)}.top{height:70px;background:rgba(7,10,14,.78);border-bottom:1px solid #1c232c;padding:0 28px}.top h1{font-size:15px;color:#e9edf2}.top .sub{color:#6f7985}.top-actions{gap:8px}.iconbtn,.btn{border:1px solid #27303b;background:#10151c;color:#dfe5eb;border-radius:10px}.iconbtn:hover,.btn:hover{background:#171e27;border-color:#36414e}.btn.primary{background:#eef2f5;color:#0a0d11;border-color:#eef2f5}.btn.danger{color:#ff8585}.content{padding:28px;max-width:1480px}.card{background:linear-gradient(145deg,#0f141b,#0c1016);border:1px solid #202833;box-shadow:0 12px 30px rgba(0,0,0,.18);border-radius:14px;padding:17px}.head h2{color:#eef2f6}.small,.muted,.mini{color:#7e8996}.big{color:#f4f7fa}.kpi{background:#131922;border:1px solid #202832}.kpi .label{color:#778290}.kpi .value{color:#eef2f5}.form input,.form select,.form textarea,.search input{background:#0c1117;color:#e8edf2;border-color:#28313b}.item,.connection{background:#0d131a;border-color:#202833;color:#e7ebef}.item:hover{background:#121922}.check{background:#0c1117;border-color:#39434e;color:#fff}.check.done{background:#dce6ed;color:#0a0d10;border-color:#dce6ed}.tag,.chip{background:#141b24;border-color:#27313d;color:#aeb7c1}.bar{background:#232b35}.bar i{background:#75e0a7}.tabs button{background:#0d131a;color:#9aa5b1;border-color:#27313d}.tabs button.active{background:#e9eef2;color:#0b0e12;border-color:#e9eef2}.datebar .date{color:#eef2f5}.datebar .iconbtn{background:#0d131a}.connection:after{background:var(--bg);color:#5e6874}.modal{background:rgba(0,0,0,.72)}.modalbox,.searchbox{background:#0d1218;color:#eef2f5;border:1px solid #26303b}.search{background:rgba(0,0,0,.68)}.result:hover{background:#151c25}.toast{background:#edf2f5;color:#0a0d11}.mobile-nav{display:none}
+/* dashboard */
+.ts-shortcuts{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:0 0 14px}.ts-shortcuts button{border:1px solid #202833;background:#0d131a;color:#e7ebef;border-radius:12px;padding:11px 10px;text-align:left;cursor:pointer}.ts-shortcuts button:hover{background:#141b23;border-color:#33404e}.ts-shortcuts b{display:block;font-size:12px}.ts-shortcuts span{display:block;font-size:10px;color:#778290;margin-top:4px}@media(max-width:900px){.ts-shortcuts{grid-template-columns:repeat(4,1fr)}}@media(max-width:520px){.ts-shortcuts{grid-template-columns:repeat(2,1fr)}}
+
+.ts-hero{display:flex;align-items:flex-end;justify-content:space-between;margin:0 0 22px;gap:20px}.ts-hero-left{display:flex;align-items:center;gap:15px}.ts-hero h2{font-size:36px;line-height:1;margin:0;letter-spacing:-.055em}.ts-hero .subline{margin-top:8px;color:#89939f;font-size:13px}.ts-date{display:flex;gap:9px;align-items:center;margin-bottom:5px}.ts-date button{width:30px;height:30px}.ts-date strong{min-width:145px;text-align:center;font-size:13px}.quote{width:min(310px,35%);padding:14px 16px;border:1px solid #202832;background:#0c1117;border-radius:12px;color:#9ea7b2;font-size:12px;line-height:1.45;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.ts-dashboard{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}.ts-donut-card{grid-column:span 4;min-height:245px}.ts-focus{grid-column:span 4}.ts-streak{grid-column:span 4}.ts-tasks{grid-column:span 8}.ts-quick{grid-column:span 4}.ts-bottom{grid-column:span 12;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.ts-lower{grid-column:span 12;display:grid;grid-template-columns:3fr 4fr 2fr;gap:14px}.ts-section-title{font-size:16px;font-weight:700;margin-bottom:14px}.ts-donut-wrap{display:flex;align-items:center;gap:24px;height:180px}.donut{width:150px;height:150px;border-radius:50%;background:conic-gradient(#78e0aa var(--pct),#27313b 0);display:grid;place-items:center;position:relative;flex:0 0 auto}.donut:after{content:"";position:absolute;width:108px;height:108px;background:#0d1218;border-radius:50%}.donut span{position:relative;z-index:1;font-size:25px;font-weight:800}.donut small{position:absolute;z-index:1;margin-top:42px;font-size:10px;color:#78838f}.metric-list{display:grid;gap:9px}.metric-row{display:flex;justify-content:space-between;align-items:center;gap:12px}.metric-row .left{display:flex;align-items:center;gap:8px}.dot{width:9px;height:9px;border-radius:50%;background:#79dfa8}.dot.blue{background:#70b9ff}.dot.purple{background:#a98aff}.dot.yellow{background:#f1d47a}.dot.red{background:#f4817a}.tinybar{height:6px;width:100px;background:#252e38;border-radius:9px;overflow:hidden}.tinybar i{display:block;height:100%;background:#72dca4;border-radius:9px}.streak-box{display:flex;gap:18px;align-items:center}.flame{font-size:31px}.streak-num{font-size:32px;font-weight:800}.streak-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:14px}.streak-grid i{height:12px;border-radius:50%;background:#15251f}.streak-grid i.on{background:#5bd991}.streak-grid i.hot{background:#89e9b1}.task-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.task-row{display:grid;grid-template-columns:24px 1fr auto auto;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid #1d2530}.task-row:last-child{border-bottom:0}.task-name{font-weight:650}.task-meta{font-size:10px;color:#74808d;margin-top:3px}.task-time{font-size:11px;color:#9ca7b2}.pbadge{font-size:9px;font-weight:800;padding:4px 6px;border-radius:5px;background:#252b33;color:#c7ced5}.pbadge.p1{background:#342222;color:#ff9a91}.pbadge.p2{background:#343122;color:#f0d977}.pbadge.p3{background:#193128;color:#8de2ae}.quick-tabs{display:flex;gap:6px;margin-bottom:10px}.quick-tabs button{flex:1;min-width:0;border:1px solid #27313c;background:#0d131a;color:#8f99a5;border-radius:8px;padding:7px;font-size:11px}.quick-tabs button.active{background:#eef2f5;color:#0b0f13}.quick-input{width:100%;border:1px solid #28323d;background:#0b1016;color:#eef2f5;border-radius:9px;padding:12px;outline:0}.quick-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:7px;margin-top:8px}.schedule{margin-top:18px}.schedule-row{display:grid;grid-template-columns:60px 12px 1fr auto;gap:8px;align-items:center;padding:6px 0;font-size:11px}.schedule-dot{width:8px;height:8px;border-radius:50%;background:#75bfff}.schedule-dot.green{background:#78dfa7}.schedule-dot.yellow{background:#f2d97c}.schedule-dot.red{background:#ef827b}.stat-tile{padding:14px;background:#0d131a;border:1px solid #202833;border-radius:13px}.stat-icon{font-size:18px}.stat-value{font-size:25px;font-weight:800;margin-top:5px}.stat-label{font-size:10px;color:#7c8793}.goal-line{margin:11px 0}.goal-line .row{font-size:11px}.notes-list{display:grid;gap:8px}.note-line{padding:8px 0;border-bottom:1px solid #1e2630;font-size:12px}.expense-donut{width:155px;height:155px;border-radius:50%;background:conic-gradient(#7bbcff 0 35%,#b887ff 35% 55%,#f2d67c 55% 73%,#75dca5 73% 88%,#7f8995 88% 100%);display:grid;place-items:center;margin:auto}.expense-donut:after{content:"";width:100px;height:100px;border-radius:50%;background:#0d1218}.expense-donut span{position:absolute;font-size:17px;font-weight:800}.money-highlight{display:flex;align-items:center;justify-content:space-between;gap:10px}.money-amount{font-size:25px;font-weight:800}.money-positive{color:#7ce0a8}.money-negative{color:#ff8b82}.money-card{cursor:pointer}.money-card:hover{border-color:#33404e}
+@media(max-width:1100px){.ts-donut-card,.ts-focus,.ts-streak{grid-column:span 6}.ts-streak{grid-column:span 6}.ts-tasks{grid-column:span 12}.ts-quick{grid-column:span 12}.ts-bottom{grid-template-columns:repeat(2,1fr)}.ts-lower{grid-template-columns:1fr 1fr}.ts-lower .wide{grid-column:span 2}}
+@media(max-width:700px){main{margin:0;width:100%}.content{padding:15px}.ts-hero{display:block}.quote{width:100%;margin-top:15px}.ts-hero h2{font-size:31px}.ts-donut-card,.ts-focus,.ts-streak,.ts-tasks,.ts-quick,.ts-lower{grid-column:span 12}.ts-bottom{grid-template-columns:1fr 1fr}.ts-lower{display:block}.ts-lower>.card{margin-bottom:14px}.quick-row{grid-template-columns:1fr 1fr}.ts-donut-wrap{justify-content:center}.donut{width:130px;height:130px}.donut:after{width:92px;height:92px}}
+
+
+/* TS v11 — proportion + mobile polish */
+.ts-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.ts-shortcuts button{min-height:58px;padding:10px 12px}
+.ts-dashboard{gap:16px}
+.ts-dashboard>.card,.ts-dashboard>.ts-bottom,.ts-dashboard>.ts-lower{min-width:0}
+.ts-hero{margin-bottom:18px}
+.connection:after{display:none!important}
+
+/* Cleaner goal cards */
+.goal-card{padding:20px!important;border-radius:18px!important}
+.goal-card .goal-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.goal-card .goal-area{font-size:12px;color:#87929f;margin-bottom:5px}
+.goal-card .goal-title{font-size:18px;font-weight:750;line-height:1.25;color:#f1f4f7}
+.goal-card .goal-type{flex:0 0 auto;padding:7px 10px;border-radius:999px;background:#15243a;color:#8ebcff;font-size:11px}
+.goal-card .goal-meta{display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:12px;color:#dce2e8}
+.goal-card .goal-empty{font-size:12px;color:#7f8a97;margin-top:10px}
+.goal-card .goal-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:17px}
+.goal-card .goal-actions .tag{margin:0}
+.goal-card .goal-actions .spacer{flex:1}
+.goal-card .goal-actions .btn{min-height:38px}
+
+@media(max-width:700px){
+  .content{padding:14px 14px 28px}
+  .top{height:76px;padding:0 14px}
+  .top-actions .iconbtn{width:42px;height:42px}
+  .ts-hero h2{font-size:30px}
+  .ts-hero-left{gap:10px}
+  .quote{font-size:11px}
+  .ts-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .ts-shortcuts button{min-height:62px}
+  .ts-dashboard{gap:12px}
+  .ts-dashboard>.card{border-radius:16px;padding:15px}
+  .ts-bottom{gap:10px}
+  .stat-tile{padding:12px}
+  .goal-card{padding:16px!important}
+  .goal-card .goal-title{font-size:17px}
+  .goal-card .goal-actions{gap:7px}
+  .goal-card .goal-actions .spacer{display:none}
+  .goal-card .goal-actions .btn{min-height:36px}
+}
+@media(min-width:701px) and (max-width:1100px){
+  .ts-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+
+/* v12 — Stats shortcut */
+@media(max-width:700px){
+  .ts-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+</style>
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon-64.png">
+  <meta name="theme-color" content="#090909">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+</head>
+<body>
+<div class="app">
+<aside><div class="logo">TS <span>Personal OS</span></div><div class="nav" id="nav"></div></aside>
+<main><header class="top"><div class="top-title"><button class="iconbtn mobile-back" id="backBtn" aria-label="Back">‹</button><div><h1 id="pageTitle">Today</h1><div class="sub" id="pageSub">One system. Everything connected.</div></div></div><div class="top-actions"><button class="iconbtn" id="searchBtn">⌕</button><button class="iconbtn" id="settingsBtn">⚙</button></div></header>
+<div class="content">
+<section class="page active" id="page-today"></section>
+<section class="page" id="page-inbox"></section>
+<section class="page" id="page-areas"></section>
+<section class="page" id="page-goals"></section>
+<section class="page" id="page-projects"></section>
+<section class="page" id="page-tasks"></section>
+<section class="page" id="page-habits"></section>
+<section class="page" id="page-study"></section>
+<section class="page" id="page-sleep"></section>
+<section class="page" id="page-skills"></section>
+<section class="page" id="page-money"></section>
+<section class="page" id="page-connections"></section>
+<section class="page" id="page-stats"></section>
+<section class="page" id="page-notes"></section>
+</div></main></div>
+
+<div class="search" id="search"><div class="searchbox"><input id="searchInput" placeholder="Search anything in TS…"><div class="results" id="results"></div></div></div>
+<div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h3 id="modalTitle"></h3><button class="x" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(()=> {
+const KEY='ts-personal-os-v5';
+const tabs=[
+ ['today','Today'],['inbox','Inbox'],['areas','Areas'],['goals','Goals'],['projects','Projects'],['tasks','Tasks'],['habits','Habits'],['study','Study'],['sleep','Sleep'],['skills','Skills'],['money','Money'],['connections','Connections'],['stats','Stats'],['notes','Notes']
+];
+const state={tab:'today',date:new Date()};
+
+const uid=()=>Math.random().toString(36).slice(2,9);
+const iso=d=>{let x=new Date(d);return x.toISOString().slice(0,10)};
+const day=d=>new Date(d+'T00:00:00');
+const fmt=d=>new Intl.DateTimeFormat(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(d);
+const add=(d,n)=>{let x=new Date(d);x.setDate(x.getDate()+n);return x};
+const weekStart=d=>{let x=new Date(d);let n=x.getDay();n=n===0?6:n-1;return add(x,-n)};
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const money=n=>Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2});
+
+function defaults(){return{
+ version:4,
+ areas:[
+  {id:'a-health',name:'Health',desc:'Energy, fitness, recovery'},
+  {id:'a-academics',name:'Academics',desc:'College, study, exams'},
+  {id:'a-career',name:'Career',desc:'Skills and future work'},
+  {id:'a-finance',name:'Finance',desc:'Income, savings, spending'},
+  {id:'a-personal',name:'Personal',desc:'Mind, relationships, life'}
+ ],
+ goals:[
+  {id:'g-month',title:'Build a stronger month',type:'monthly',areaId:'a-health',metric:'completion',target:20,progress:0,why:'Build consistency and energy',parentId:null},
+ ],
+ projects:[],tasks:[],habits:[
+  {id:'h-workout',name:'Workout',areaId:'a-health',cadence:'daily',priority:2,duration:60,history:{}},
+  {id:'h-read',name:'Read',areaId:'a-personal',cadence:'daily',priority:3,duration:20,history:{}}
+ ],
+ study:{target:60,sessions:{},chapters:[]},sleep:{goal:8,entries:[]},
+ skills:{current:null,history:[]},money:{transactions:[],savingsGoal:0,budget:0},notes:{},inbox:[],links:[],undo:[],mood:{},water:{}
+}}
+function normalize(d){
+ let x=d||defaults(); x.version=4;
+ x.areas=x.areas||defaults().areas;x.goals=x.goals||[];x.projects=x.projects||[];x.tasks=x.tasks||[];x.habits=x.habits||[];
+ x.study=x.study||{target:60,sessions:{},chapters:[]};x.study.sessions=x.study.sessions||{};x.study.chapters=x.study.chapters||[];
+ x.sleep=x.sleep||{goal:8,entries:[]};x.sleep.entries=x.sleep.entries||[];x.skills=x.skills||{current:null,history:[]};
+ x.money=x.money||{transactions:[],savingsGoal:0,budget:0};x.notes=x.notes||{};x.inbox=x.inbox||[];x.links=x.links||[];x.undo=x.undo||[];x.mood=x.mood||{};x.water=x.water||{};
+ x.habits.forEach(h=>{h.history=h.history||{};h.areaId=h.areaId||'';h.priority=h.priority||2;h.duration=+h.duration||0});
+ x.goals.forEach(g=>{g.type=g.type||'overall';g.metric=g.metric||'completion';g.target=+g.target||1;g.progress=+g.progress||0;g.areaId=g.areaId||''});
+ return x;
+}
+let data;
+try{data=normalize(JSON.parse(localStorage.getItem(KEY)||'null'))}catch(e){data=defaults()}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function toast(s){let t=document.getElementById('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+function openModal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modal').classList.add('open')}
+window.closeModal=()=>document.getElementById('modal').classList.remove('open');
+
+function areaName(id){return data.areas.find(x=>x.id===id)?.name||'Unassigned'}
+function goalName(id){return data.goals.find(x=>x.id===id)?.title||'Unknown goal'}
+function projectName(id){return data.projects.find(x=>x.id===id)?.name||'Unknown project'}
+function isDone(x,date=iso(state.date)){return !!x.history?.[date]}
+function linked(id){return data.links.filter(l=>l.from===id||l.to===id)}
+function linksTo(id){return data.links.filter(l=>l.to===id).map(l=>l.from)}
+function linksFrom(id){return data.links.filter(l=>l.from===id).map(l=>l.to)}
+function noteEntities(){return Object.entries(data.notes||{}).map(([id,n])=>({...n,id,kind:'note'}))}
+function allEntities(){return [...data.areas,...data.goals,...data.projects,...data.tasks,...data.habits,...data.study.chapters.map(x=>({...x,kind:'chapter'})),...(data.skills.current?[data.skills.current]:[]),...noteEntities()]}
+function entity(id){return allEntities().find(x=>x.id===id)}
+function kindOf(id){
+ if(data.areas.some(x=>x.id===id))return'Area';if(data.goals.some(x=>x.id===id))return'Goal';if(data.projects.some(x=>x.id===id))return'Project';if(data.tasks.some(x=>x.id===id))return'Task';if(data.habits.some(x=>x.id===id))return'Habit';if(data.study.chapters.some(x=>x.id===id))return'Study';if(data.skills.current?.id===id)return'Skill';if(Object.prototype.hasOwnProperty.call(data.notes||{},id))return'Note';return'Item';
+}
+function titleOf(id){let e=entity(id);return e?.name||e?.title||'Item'}
+function pct(n,t){return Math.max(0,Math.min(100,Math.round((n/Math.max(1,t))*100)))}
+function priority(p){return `<span class="priority p${p}">P${p}</span>`}
+
+function nav(){
+ let groups=[['PLAN',['today','inbox']],['SYSTEM',['areas','goals','projects','tasks','habits']],['TRACK',['study','sleep','skills','money']],['INSIGHT',['connections','stats','notes']]];
+ let out='';groups.forEach(g=>{out+=`<div class="section">${g[0]}</div>`;g[1].forEach(t=>{let n=tabs.find(x=>x[0]===t)[1];out+=`<button class="${state.tab===t?'active':''}" onclick="go('${t}')">${n}</button>`})});document.getElementById('nav').innerHTML=out;
+ 
+}
+function renderTab(t){state.tab=t;document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));let page=document.getElementById('page-'+t);if(page)page.classList.add('active');let n=tabs.find(x=>x[0]===t)?.[1]||t;document.getElementById('pageTitle').textContent=n;document.getElementById('pageSub').textContent={today:'One system. Everything connected.',inbox:'Capture first. Organize later.',areas:'The life areas your system supports.',goals:'Outcomes with measurable progress.',projects:'Projects turn goals into deliverables.',tasks:'Every action can connect upward.',habits:'Recurring actions that feed your goals.',study:'Time and chapters, linked to outcomes.',sleep:'Recovery as part of the system.',skills:'Skills, projects and tangible output.',money:'Income, spending and savings.',connections:'See how everything feeds everything.',stats:'Evidence, trends and actionable signals.',notes:'Notes that can connect to the system.'}[t]||'';renderPage(t);nav();document.getElementById('backBtn').style.visibility=t==='today'?'hidden':'visible'}
+function tabFromHash(){let m=location.hash.match(/^#ts=(.+)$/);return tabs.some(x=>x[0]===m?.[1])?m[1]:'today'}
+window.go=(t,push=true)=>{if(!tabs.some(x=>x[0]===t))return;if(push&&t!==state.tab){location.hash='ts='+t;return}renderTab(t)};
+window.addEventListener('hashchange',()=>renderTab(tabFromHash()));
+window.appBack=()=>{if(state.tab==='today')return;try{history.back()}catch(e){location.hash=''}};
+document.getElementById('backBtn').onclick=()=>window.appBack();
+
+
+function datebar(){return `<div class="datebar"><button class="iconbtn" onclick="shift(-1)">‹</button><div class="date">${fmt(state.date)}</div><button class="iconbtn" onclick="shift(1)">›</button><button class="btn small" onclick="jumpToday()">Today</button><button class="btn small" onclick="datePicker()">Date</button></div>`}
+window.shift=n=>{state.date=add(state.date,n);renderPage(state.tab)}
+window.jumpToday=()=>{state.date=new Date();renderPage(state.tab)}
+window.datePicker=()=>openModal('Jump to date',`<div class="form"><input id="pickDate" type="date" value="${iso(state.date)}"><button class="btn primary" onclick="state.date=day(document.getElementById('pickDate').value);closeModal();renderPage(state.tab)">Open date</button></div>`);
+
+function actionBtn(action,label,attrs=''){return `<button class="btn small" data-action="${action}" ${attrs}>${label}</button>`}
+function connectBtn(id){return `<button class="btn small" onclick="connect('${id}')">↗ Connect</button>`}
+window.connect=id=>{
+ let opts=allEntities().filter(x=>x.id!==id);
+ openModal('Connect to',`<div class="small" style="margin-bottom:10px">Connecting <b>${esc(titleOf(id))}</b>. Choose a relationship.</div><div class="stack">${opts.map(x=>`<label class="item row"><input type="checkbox" value="${x.id}" ${data.links.some(l=>(l.from===id&&l.to===x.id)||(l.to===id&&l.from===x.id))?'checked':''}> <span><b>${esc(x.name||x.title)}</b><span class="mini"> · ${kindOf(x.id)}</span></span></label>`).join('')}</div><button class="btn primary" style="margin-top:12px;width:100%" onclick="saveConnections('${id}')">Save connections</button>`);
+}
+window.saveConnections=id=>{
+ let checks=[...document.querySelectorAll('#modalBody input[type=checkbox]')].filter(x=>x.checked).map(x=>x.value);
+ data.links=data.links.filter(l=>l.from!==id&&l.to!==id);checks.forEach(to=>data.links.push({id:uid(),from:id,to,relation:'supports'}));save();closeModal();renderPage(state.tab);toast('Connections updated');
+}
+
+function taskCard(t,source='task'){
+ let done=source==='habit'?isDone(t):t.done;
+ return `<div class="item row between"><div class="row" style="flex:1"><button class="check ${done?'done':''}" onclick="${source==='habit'?`toggleHabit('${t.id}')`:`toggleTask('${t.id}')`}">${done?'✓':''}</button><div><div class="title">${esc(t.name||t.title)} ${priority(t.priority||2)}</div><div class="mini">${source==='habit'?`${t.cadence||'daily'} · ${t.duration||0}m`:`${t.duration||0}m · ${t.status||'open'}`}${t.areaId?' · '+esc(areaName(t.areaId)):''}</div></div></div><div class="row">${source==='task'?`<button class="btn small" onclick="editTask('${t.id}')">Edit</button>`:`<button class="btn small" onclick="editHabit('${t.id}')">Edit</button>`} ${connectBtn(t.id)} <button class="btn small danger" onclick="deleteEntity('${t.id}','${source}')">×</button></div></div>`
+}
+window.toggleHabit=id=>{let h=data.habits.find(x=>x.id===id);h.history=h.history||{};let d=iso(state.date);h.history[d]=!h.history[d];save();renderPage(state.tab);toast(h.history[d]?'Completed · progress rolled up':'Unchecked')}
+window.toggleTask=id=>{let t=data.tasks.find(x=>x.id===id);t.done=!t.done;t.completedAt=t.done?iso(state.date):null;save();renderPage(state.tab)}
+window.deleteEntity=(id,type)=>{
+ let snapshot=JSON.stringify(data);data.undo.push(snapshot);if(type==='habit')data.habits=data.habits.filter(x=>x.id!==id);else if(type==='task')data.tasks=data.tasks.filter(x=>x.id!==id);else if(type==='project')data.projects=data.projects.filter(x=>x.id!==id);else if(type==='goal')data.goals=data.goals.filter(x=>x.id!==id);else if(type==='area')data.areas=data.areas.filter(x=>x.id!==id);data.links=data.links.filter(l=>l.from!==id&&l.to!==id);save();renderPage(state.tab);toast('Deleted · Undo available in Settings')}
+window.undo=()=>{if(!data.undo.length)return toast('Nothing to undo');data=normalize(JSON.parse(data.undo.pop()));save();renderPage(state.tab);toast('Undo complete')}
+
+function periodStats(){
+ let d=iso(state.date), hs=data.habits.filter(h=>isDone(h,d)).length, ts=data.tasks.filter(t=>t.completedAt===d).length;
+ let study=data.study.sessions[d]||0;let se=data.sleep.entries.find(x=>x.date===d);let sl=se?sleepDuration(se.bed,se.wake):0;
+ let week=weekStart(state.date),wDays=Array.from({length:7},(_,i)=>iso(add(week,i)));
+ let hw=wDays.reduce((s,z)=>s+data.habits.filter(h=>isDone(h,z)).length,0),tw=wDays.reduce((s,z)=>s+data.tasks.filter(t=>t.completedAt===z).length,0);
+ return{hs,ts,study,sl,hw,tw}
+}
+function sleepDuration(a,b){if(!a||!b)return 0;let [ah,am]=a.split(':').map(Number),[bh,bm]=b.split(':').map(Number),x=ah*60+am,y=bh*60+bm;if(y<=x)y+=1440;return(y-x)/60}
+
+let dashQuickMode='task';
+function setQuickMode(mode){
+  dashQuickMode=mode;
+  document.querySelectorAll('.quick-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+  let input=document.getElementById('dashCapture'), row=document.getElementById('quickControls');
+  if(!input||!row)return;
+  if(mode==='task'){input.placeholder='What task do you want to add?';row.innerHTML=`<select id="dashPriority"><option value="1">P1</option><option value="2" selected>P2</option><option value="3">P3</option></select><input id="dashDate" type="date" value="${iso(state.date)}"><input id="dashMinutes" type="number" value="30" min="0"><button class="btn primary" onclick="dashAddQuick()">Add</button>`}
+  if(mode==='note'){input.placeholder='Write a note...';row.innerHTML=`<input id="dashNoteTitle" placeholder="Title" style="min-width:0"><button class="btn primary" onclick="dashAddQuick()">Add note</button>`}
+  if(mode==='expense'){input.placeholder='Expense description';row.innerHTML=`<input id="dashAmount" type="number" min="0" placeholder="₹ Amount"><select id="dashCategory"><option value="Food">Food</option><option value="Transport">Transport</option><option value="Shopping">Shopping</option><option value="Education">Education</option><option value="Health">Health</option><option value="Entertainment">Entertainment</option><option value="Others" selected>Others</option></select><button class="btn primary" onclick="dashAddQuick()">Add expense</button>`}
+  if(mode==='idea'){input.placeholder='Capture an idea...';row.innerHTML=`<button class="btn primary" onclick="dashAddQuick()">Save idea</button>`}
+  if(mode==='study'){input.placeholder='What did you study?';row.innerHTML=`<input id="dashStudyMinutes" type="number" value="30" min="1" placeholder="Minutes"><button class="btn primary" onclick="dashAddQuick()">Log study</button>`}
+}
+window.dashAddQuick=()=>{
+  let text=(document.getElementById('dashCapture')?.value||'').trim();
+  if(dashQuickMode==='study'){
+    let n=+document.getElementById('dashStudyMinutes')?.value||0; if(n<=0)return toast('Enter study minutes'); let d=iso(state.date); data.study.sessions[d]=(data.study.sessions[d]||0)+n; save(); renderPage('today'); toast('Study logged'); return;
+  }
+  if(!text)return toast('Enter something first');
+  if(dashQuickMode==='task'){
+    data.tasks.push({id:uid(),name:text,done:false,status:'open',priority:+document.getElementById('dashPriority').value||2,duration:+document.getElementById('dashMinutes').value||0,scheduledDate:document.getElementById('dashDate').value,areaId:'',projectId:''}); toast('Task added');
+  } else if(dashQuickMode==='note'){
+    let id=uid(),title=(document.getElementById('dashNoteTitle')?.value||'Quick note').trim(); data.notes[id]={title:title||'Quick note',body:text,date:iso(state.date)}; toast('Note added');
+  } else if(dashQuickMode==='expense'){
+    let amount=+document.getElementById('dashAmount').value||0;if(amount<=0)return toast('Enter an amount'); data.money.transactions.push({id:uid(),date:iso(state.date),type:'expense',amount,note:text,category:(document.getElementById('dashCategory').value||'Others').trim()}); toast('Expense added');
+  } else if(dashQuickMode==='idea'){
+    data.inbox.unshift({id:uid(),text,kind:'idea',createdAt:new Date().toLocaleString()}); toast('Idea saved');
+  }
+  save(); renderPage('today');
+};
+function renderToday(){
+ let s=periodStats(), d=iso(state.date), allDayTasks=data.tasks.filter(t=>(t.scheduledDate||d)===d), openTasks=allDayTasks.filter(t=>!t.done), doneTasks=allDayTasks.filter(t=>t.done), habits=data.habits.slice(0,8);
+ let totalActions=allDayTasks.length+data.habits.length, completed=doneTasks.length+s.hs, overall=pct(completed,Math.max(1,totalActions));
+ let areaRows=data.areas.slice(0,5).map((a,i)=>{let hs=data.habits.filter(h=>h.areaId===a.id),ts=allDayTasks.filter(t=>t.areaId===a.id),den=hs.length+ts.length,num=hs.filter(h=>isDone(h,d)).length+ts.filter(t=>t.done).length;return {a,p:pct(num,Math.max(1,den)),i}});
+ let streak=0; for(let i=0;i<60;i++){let z=iso(add(state.date,-i)); if(data.habits.length&&data.habits.every(h=>isDone(h,z)))streak++;else if(i===0)break;else break;}
+ let inc=data.money.transactions.filter(x=>x.type==='income').reduce((s,x)=>s+Number(x.amount||0),0), exp=data.money.transactions.filter(x=>x.type==='expense').reduce((s,x)=>s+Number(x.amount||0),0), sav=data.money.transactions.filter(x=>x.type==='saving').reduce((s,x)=>s+Number(x.amount||0),0);
+ let recent=data.money.transactions.slice(-5).reverse();
+ let expenseTotal=exp||1, cats={Food:0,Transport:0,Shopping:0,Education:0,Others:0}; data.money.transactions.filter(x=>x.type==='expense').forEach(x=>cats[x.category||'Others']=(cats[x.category||'Others']||0)+Number(x.amount||0));
+ let catPct=k=>Math.round((cats[k]/expenseTotal)*100);
+ document.getElementById('page-today').innerHTML=`
+ <div class="ts-hero"><div class="ts-hero-left"><div><div class="ts-date"><button class="iconbtn" onclick="shift(-1)">‹</button><strong>${fmt(state.date)}</strong><button class="iconbtn" onclick="shift(1)">›</button></div><h2>Today</h2><div class="subline">Small steps every day lead to big results.</div></div></div><div class="quote">“Consistency compounds. Everything you do today becomes part of the system.”</div></div>
+ <div class="ts-shortcuts"><button onclick="go('goals')"><b>Goals</b><span>Progress</span></button><button onclick="go('tasks')"><b>Tasks</b><span>Actions</span></button><button onclick="go('habits')"><b>Habits</b><span>Daily</span></button><button onclick="go('study')"><b>Study</b><span>Log time</span></button><button onclick="go('sleep')"><b>Sleep</b><span>Recovery</span></button><button onclick="go('skills')"><b>Skills</b><span>Practice</span></button><button onclick="go('money')"><b>Money</b><span>Track</span></button><button onclick="go('stats')"><b>Stats</b><span>Insights</span></button><button onclick="go('notes')"><b>Notes</b><span>Capture</span></button></div>
+  <div class="ts-dashboard">
+  <div class="card ts-donut-card"><div class="ts-section-title">Today at a glance</div><div class="ts-donut-wrap"><div class="donut" style="--pct:${overall}%"><span>${overall}%</span><small>TODAY</small></div><div class="metric-list"><div><b>${totalActions}</b> <span class="mini">Total actions</span></div><div><b>${completed}</b> <span class="mini">Completed</span></div><div><b>${Math.max(0,totalActions-completed)}</b> <span class="mini">Remaining</span></div><div class="mini" style="margin-top:6px">“Small consistent action compounds everything.”</div></div></div></div>
+  <div class="card ts-focus"><div class="head"><h2>Focus Areas</h2><button class="btn small" onclick="go('areas')">View all</button></div><div class="metric-list">${areaRows.map(r=>`<div class="metric-row"><div class="left"><span class="dot ${['','blue','purple','yellow','red'][r.i]||''}"></span><span>${esc(r.a.name)}</span></div><div class="row"><div class="tinybar"><i style="width:${r.p}%"></i></div><span class="mini" style="width:30px;text-align:right">${r.p}%</span></div></div>`).join('')}</div></div>
+  <div class="card ts-streak"><div class="head"><h2>Streak</h2><span class="small">Sep 2026</span></div><div class="streak-box"><div><div class="streak-num">${streak}</div><div class="mini">days</div></div></div><div class="streak-grid">${Array.from({length:21},(_,i)=>`<i class="${i<Math.min(21,streak)?(i<7?'hot':'on'):''}"></i>`).join('')}</div><div class="mini" style="margin-top:13px">Show up, even on the hard days.</div></div>
+  <div class="card ts-tasks"><div class="task-head"><div><div class="ts-section-title" style="margin:0">Today's Tasks</div><span class="mini">${openTasks.length} remaining · ${doneTasks.length} completed</span></div><button class="btn primary" onclick="quickAddTask()">+ Add Task</button></div><div>${allDayTasks.map(t=>`<div class="task-row"><button class="check ${t.done?'done':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</button><div><div class="task-name">${esc(t.name)}</div><div class="task-meta">${t.areaId?esc(areaName(t.areaId)):'Personal'}${t.projectId?' · '+esc(projectName(t.projectId)):''}</div></div><span class="pbadge p${t.priority||2}">P${t.priority||2}</span><span class="task-time">◷ ${t.duration||0}m${t.scheduledDate?' · '+(t.scheduledDate===d?'Today':t.scheduledDate):''}</span></div>`).join('')||'<div class="empty">No tasks planned for this day.</div>'}</div></div>
+  <div class="card ts-quick"><div class="ts-section-title">Quick Capture</div><div class="quick-tabs"><button data-mode="task" class="active" onclick="setQuickMode('task')">Task</button><button data-mode="note" onclick="setQuickMode('note')">Note</button><button data-mode="expense" onclick="setQuickMode('expense')">Expense</button><button data-mode="idea" onclick="setQuickMode('idea')">Idea</button><button data-mode="study" onclick="setQuickMode('study')">Study</button></div><input id="dashCapture" class="quick-input" placeholder="What task do you want to add?"><div class="quick-row" id="quickControls"><select id="dashPriority"><option value="1">P1</option><option value="2" selected>P2</option><option value="3">P3</option></select><input id="dashDate" type="date" value="${d}"><input id="dashMinutes" type="number" value="30" min="0"><button class="btn primary" onclick="dashAddQuick()">Add</button></div><div class="schedule"><div class="ts-section-title">Today's Schedule</div>${allDayTasks.slice(0,5).map((t,i)=>`<div class="schedule-row"><span>${i+6}:00 PM</span><i class="schedule-dot ${i%3===0?'green':i%3===1?'yellow':'red'}"></i><b>${esc(t.name)}</b><span class="mini">${t.duration||0}m</span></div>`).join('')||'<div class="mini">No scheduled tasks yet.</div>'}</div></div>
+  <div class="ts-bottom"><div class="stat-tile money-card" onclick="go('study')"><div class="stat-icon">📖</div><div class="stat-value">${(s.study/60).toFixed(1)}h <span class="mini">/ ${(data.study.target/60).toFixed(0)}h</span></div><div class="stat-label">STUDY</div><div class="bar" style="margin-top:9px"><i style="width:${pct(s.study,data.study.target)}%;background:#72b9ff"></i></div></div><div class="stat-tile money-card" onclick="go('sleep')"><div class="stat-icon">☾</div><div class="stat-value">${s.sl?s.sl.toFixed(1):'—'}h <span class="mini">Avg ${data.sleep.goal}h</span></div><div class="stat-label">SLEEP</div><div class="bar" style="margin-top:9px"><i style="width:${pct(s.sl,data.sleep.goal)}%;background:#a98aff"></i></div></div><div class="stat-tile money-card" onclick="go('money')"><div class="stat-icon">💰</div><div class="stat-value money-positive">₹${money(sav)}</div><div class="stat-label">SAVED · TODAY</div><div class="bar" style="margin-top:9px"><i style="width:${pct(sav,data.money.savingsGoal||Math.max(1,sav))}%"></i></div></div></div>
+  <div class="ts-lower"><div class="card"><div class="head"><h2>Goals Progress</h2><button class="btn small" onclick="go('goals')">View all</button></div>${data.goals.slice(0,4).map(g=>`<div class="goal-line"><div class="row between"><span>${esc(g.title)}</span><span class="mini">${goalPct(g)}%</span></div><div class="bar"><i style="width:${goalPct(g)}%"></i></div></div>`).join('')||'<div class="empty">Create a goal to see progress.</div>'}</div><div class="card wide"><div class="head"><h2>Expense Overview</h2><span class="small">This month</span></div><div style="display:flex;align-items:center;gap:22px"><div class="expense-donut"><span>₹${money(exp)}</span></div><div class="metric-list" style="flex:1">${Object.keys(cats).map(k=>`<div class="metric-row"><div class="left"><span class="dot"></span><span>${k}</span></div><span class="mini">${catPct(k)}%</span></div>`).join('')}</div></div></div><div class="card"><div class="head"><h2>Notes</h2><button class="btn small" onclick="go('notes')">View all</button></div><div class="notes-list">${Object.values(data.notes).slice(-5).reverse().map(n=>`<div class="note-line">• ${esc(n.title||'Untitled')}</div>`).join('')||'<div class="mini">No notes yet.</div>'}</div></div></div>
+ </div>`;
+}
+window.dashAddTask=()=>{let n=document.getElementById('dashCapture').value.trim();if(!n)return toast('Enter a task');data.tasks.push({id:uid(),name:n,done:false,status:'open',priority:+document.getElementById('dashPriority').value,duration:+document.getElementById('dashMinutes').value||0,scheduledDate:document.getElementById('dashDate').value,areaId:'',projectId:''});save();renderPage('today');toast('Task added')};
+
+function goalFlow(g){let kids=linksTo(g.id).map(entity).filter(Boolean);return `<div class="connection"><div class="node-type">OVERALL GOAL · ${esc(areaName(g.areaId))}</div><div class="node-title">${esc(g.title)}</div><div class="progress"><div class="progress-line"><span>${goalProgress(g)} / ${g.target} ${metricLabel(g.metric)}</span><span>${goalPct(g)}%</span></div><div class="bar"><i style="width:${goalPct(g)}%"></i></div></div><div class="linkchips">${kids.slice(0,7).map(x=>`<span class="chip">${esc(x.name||x.title)}</span>`).join('')||'<span class="mini">No actions connected yet</span>'}</div></div>`}
+function metricLabel(m){return{completion:'done',count:'count',duration:'min',amount:'₹',quantity:'units',average:'avg'}[m]||'units'}
+function goalPeriodDates(g){return null}
+function goalProgress(g){
+ let ids=linksTo(g.id),n=0;
+ if(g.metric==='amount') return data.money.transactions.filter(t=>t.type==='saving').reduce((s,t)=>s+Number(t.amount||0),0)+Number(g.progress||0);
+ ids.forEach(id=>{
+  let h=data.habits.find(x=>x.id===id);
+  if(h){
+   let days=Object.keys(h.history||{});
+   if(g.metric==='duration') n+=days.filter(d=>isDone(h,d)).reduce((s,d)=>s+Number(h.duration||0),0);
+   else n+=days.filter(d=>isDone(h,d)).length;
+  }
+  let t=data.tasks.find(x=>x.id===id);
+  if(t && t.done) n+=1;
+  let c=data.study.chapters.find(x=>x.id===id);
+  if(c) n+=Number(c.done||0);
+  let sk=data.skills.current;
+  if(sk && sk.id===id){if(g.metric==='duration') n+=Number(sk.practice||0); else n+=Number(sk.output||0);}
+ });
+ return n+Number(g.progress||0);
+}
+function goalPct(g){return pct(goalProgress(g),g.target)}
+
+function renderInbox(){
+ document.getElementById('page-inbox').innerHTML=`<div class="card"><div class="head"><div><h2>Inbox</h2><div class="small">Quick capture without deciding where it belongs.</div></div><button class="btn primary" onclick="quickCapture()">+ Capture</button></div><div class="list">${data.inbox.map((x,i)=>`<div class="item row between"><div><b>${esc(x.text)}</b><div class="mini">${x.createdAt}</div></div><div class="row"><button class="btn small" onclick="convertInbox(${i})">Turn into task</button><button class="btn small danger" onclick="data.inbox.splice(${i},1);save();renderPage('inbox')">×</button></div></div>`).join('')||'<div class="empty">Inbox is empty.</div>'}</div></div>`;
+}
+function renderAreas(){
+ document.getElementById('page-areas').innerHTML=`<div class="head"><div><h2>Areas</h2><div class="small">Stable parts of life. Goals live inside areas.</div></div><button class="btn primary" onclick="addArea()">+ Area</button></div><div class="grid">${data.areas.map(a=>{let gs=data.goals.filter(g=>g.areaId===a.id),hs=data.habits.filter(h=>h.areaId===a.id),ts=data.tasks.filter(t=>t.areaId===a.id);return `<div class="card span-4"><div class="head"><h2>${esc(a.name)}</h2>${connectBtn(a.id)}</div><div class="small">${esc(a.desc||'')}</div><div class="kpis" style="grid-template-columns:repeat(3,1fr);margin-top:12px"><div class="kpi"><div class="label">GOALS</div><div class="value">${gs.length}</div></div><div class="kpi"><div class="label">HABITS</div><div class="value">${hs.length}</div></div><div class="kpi"><div class="label">TASKS</div><div class="value">${ts.length}</div></div></div><div style="margin-top:12px">${gs.map(goalFlow).join('')||'<span class="mini">No goals yet.</span>'}</div></div>`}).join('')}</div>`;
+}
+
+let goalFilter='all';
+function renderGoals(){
+ let filters=[['all','All'],['longterm','Long-term'],['monthly','Monthly'],['weekly','Weekly']];
+ let shown=goalFilter==='all'?data.goals:data.goals.filter(g=>g.type===goalFilter);
+ document.getElementById('page-goals').innerHTML=`
+ <div class="tabs">${filters.map(([v,label])=>`<button class="${goalFilter===v?'active':''}" onclick="setGoalFilter('${v}')">${label}</button>`).join('')}</div>
+ <div class="card" style="margin-bottom:16px;padding:18px 20px">
+   <div class="row between" style="gap:16px">
+     <div>
+       <div style="font-size:17px;font-weight:750">One overall goal system.</div>
+       <div class="small" style="margin-top:5px">Everything you do — tasks, habits, study, skills and projects — feeds these goals.</div>
+     </div>
+     <button class="btn primary" onclick="addGoal()">+ Add Goal</button>
+   </div>
+ </div>
+ <div class="stack">
+ ${shown.map(g=>`
+   <div class="card goal-card">
+     <div class="goal-top">
+       <div>
+         <div class="goal-area">${esc(areaName(g.areaId))}</div>
+         <div class="goal-title">${esc(g.title)}</div>
+       </div>
+       <span class="goal-type">${esc(g.type||'longterm')}</span>
+     </div>
+     <div class="goal-meta">
+       <span>${goalProgress(g)} / ${g.target} ${metricLabel(g.metric)}</span>
+       <span>${goalPct(g)}%</span>
+     </div>
+     <div class="bar" style="margin-top:8px"><i style="width:${goalPct(g)}%"></i></div>
+     <div class="goal-empty">${linksTo(g.id).length ? `${linksTo(g.id).length} connected action${linksTo(g.id).length===1?'':'s'}` : 'No actions connected yet.'}</div>
+     <div class="goal-actions">
+       <span class="tag">${esc(g.type||'longterm')}</span>
+       <span class="tag">${esc(g.metric)}</span>
+       <span class="tag">↗ ${linksTo(g.id).length}</span>
+       <span class="spacer"></span>
+       <button class="btn small" onclick="editGoal('${g.id}')">Edit</button>
+       ${connectBtn(g.id)}
+       <button class="btn small danger" onclick="deleteEntity('${g.id}','goal')">×</button>
+     </div>
+   </div>`).join('') || '<div class="card"><div class="empty">No goals in this view. Create an overall goal and connect the work that contributes to it.</div></div>'}
+ </div>`;
+}
+window.setGoalFilter=v=>{goalFilter=v;renderPage('goals')};
+function renderProjects(){
+ document.getElementById('page-projects').innerHTML=`<div class="head"><div><h2>Projects</h2><div class="small">Projects are finite containers between goals and tasks.</div></div><button class="btn primary" onclick="addProject()">+ Project</button></div><div class="grid">${data.projects.map(p=>{let ts=data.tasks.filter(t=>t.projectId===p.id),done=ts.filter(t=>t.done).length;return `<div class="card span-6"><div class="head"><div><h2>${esc(p.name)}</h2><div class="small">${esc(areaName(p.areaId))} · ${done}/${ts.length} tasks</div></div>${connectBtn(p.id)}</div><div class="progress"><div class="bar"><i style="width:${pct(done,ts.length)}%"></i></div></div><div class="list" style="margin-top:10px">${ts.slice(0,5).map(taskCard).join('')||'<span class="mini">No tasks. Add one from Tasks.</span>'}</div><div class="row" style="margin-top:10px"><button class="btn small" onclick="quickAddTask('${p.id}')">+ Task</button><button class="btn small" onclick="editProject('${p.id}')">Edit</button><button class="btn small danger" onclick="deleteEntity('${p.id}','project')">Delete</button></div></div>`}).join('')||'<div class="card span-12"><div class="empty">Projects give goals a place to become real work.</div></div>'}</div>`;
+}
+function renderTasks(){
+ document.getElementById('page-tasks').innerHTML=`${datebar()}<div class="head"><div><h2>Tasks</h2><div class="small">Priorities, duration, scheduling, projects and dependencies.</div></div><button class="btn primary" onclick="quickAddTask()">+ Task</button></div><div class="card"><div class="list">${data.tasks.filter(t=>!t.scheduledDate||t.scheduledDate===iso(state.date)).map(taskCard).join('')||'<div class="empty">No tasks for this date.</div>'}</div></div>`;
+}
+function renderHabits(){
+ document.getElementById('page-habits').innerHTML=`<div class="head"><div><h2>Habits</h2><div class="small">Persistent daily actions. Each completion can feed goals and areas.</div></div><button class="btn primary" onclick="addHabit()">+ Habit</button></div><div class="grid"><div class="card span-7"><div class="list">${data.habits.map(h=>taskCard(h,'habit')).join('')||'<div class="empty">No habits yet.</div>'}</div></div><div class="card span-5"><h2>Habit health</h2><div class="stack" style="margin-top:12px">${data.habits.map(h=>{let seven=Array.from({length:7},(_,i)=>isDone(h,iso(add(state.date,-i)))).filter(Boolean).length;return `<div class="item"><div class="row between"><b>${esc(h.name)}</b><span>${seven}/7</span></div><div class="bar"><i style="width:${pct(seven,7)}%"></i></div></div>`}).join('')}</div></div></div>`;
+}
+function renderStudy(){
+ let d=iso(state.date),min=data.study.sessions[d]||0,chap=data.study.chapters;
+ document.getElementById('page-study').innerHTML=`${datebar()}<div class="grid"><div class="card span-5"><div class="head"><h2>Study today</h2><button class="btn small" onclick="logStudy()">+ Log</button></div><div class="big">${min}m</div><div class="small">target ${data.study.target}m</div><div class="bar" style="margin-top:10px"><i style="width:${pct(min,data.study.target)}%"></i></div><div class="form" style="margin-top:12px"><input id="studyTarget" type="number" value="${data.study.target}" min="1"><button class="btn" onclick="data.study.target=+document.getElementById('studyTarget').value;save();renderPage('study')">Set target</button></div></div><div class="card span-7"><div class="head"><h2>Chapters</h2><button class="btn primary" onclick="addChapter()">+ Chapter</button></div><div class="list">${chap.map(c=>`<div class="item row between"><div><b>${esc(c.name)}</b><div class="mini">${c.done}/${c.total} completed</div></div><div class="row"><button class="btn small" onclick="chapterStep('${c.id}',1)">+1</button>${connectBtn(c.id)}<button class="btn small danger" onclick="data.study.chapters=data.study.chapters.filter(x=>x.id!=='${c.id}');save();renderPage('study')">×</button></div></div>`).join('')||'<div class="empty">Add chapters so study progress can connect to goals.</div>'}</div></div></div>`;
+}
+function renderSleep(){
+ let d=iso(state.date),e=data.sleep.entries.find(x=>x.date===d),recent=data.sleep.entries.slice(-7),avg=recent.length?recent.reduce((s,x)=>s+sleepDuration(x.bed,x.wake),0)/recent.length:0;
+ document.getElementById('page-sleep').innerHTML=`${datebar()}<div class="grid"><div class="card span-5"><div class="head"><h2>Sleep log</h2></div><div class="form"><input id="bed" type="time" value="${e?.bed||'22:30'}"><input id="wake" type="time" value="${e?.wake||'06:30'}"><input id="sleepGoal" type="number" step=".25" value="${data.sleep.goal}" min="1" max="14"><button class="btn primary" onclick="saveSleep()">Save</button></div><div style="margin-top:14px" class="small">Goal hours · ${data.sleep.goal}</div></div><div class="card span-7"><div class="kpis"><div class="kpi"><div class="label">LAST NIGHT</div><div class="value">${e?sleepDuration(e.bed,e.wake).toFixed(1)+'h':'—'}</div></div><div class="kpi"><div class="label">7-DAY AVG</div><div class="value">${avg.toFixed(1)}h</div></div><div class="kpi"><div class="label">GOAL</div><div class="value">${data.sleep.goal}h</div></div><div class="kpi"><div class="label">STATUS</div><div class="value">${avg>=data.sleep.goal?'OK':'LOW'}</div></div></div><div style="margin-top:15px">${recent.map(x=>`<div class="row between" style="padding:7px 0;border-bottom:1px solid var(--line)"><span>${x.date}</span><b>${sleepDuration(x.bed,x.wake).toFixed(1)}h</b></div>`).join('')}</div></div></div>`;
+}
+function renderSkills(){
+ let c=data.skills.current;
+ document.getElementById('page-skills').innerHTML=`<div class="head"><div><h2>Skills</h2><div class="small">Track a skill through projects, practice and output.</div></div><button class="btn primary" onclick="setSkill()">+ Set current skill</button></div><div class="grid"><div class="card span-7">${c?`<div class="head"><div><div class="small">CURRENT SKILL</div><h2>${esc(c.name)}</h2></div>${connectBtn(c.id)}</div><div class="progress"><div class="progress-line"><span>${c.output||0} tangible outputs</span><span>${c.practice||0}m practice</span></div><div class="bar"><i style="width:${pct(c.output||0,10)}%"></i></div></div><div class="row" style="margin-top:12px"><button class="btn" onclick="logSkill()">Log practice/output</button></div>`:'<div class="empty">Set one current skill. History stays below.</div>'}</div><div class="card span-5"><h2>History</h2><div class="list" style="margin-top:10px">${data.skills.history.map(x=>`<div class="item"><b>${esc(x.name)}</b><div class="mini">${x.date||''}</div></div>`).join('')||'<span class="mini">No skill history.</span>'}</div></div></div>`;
+}
+function renderMoney(){
+ let inc=data.money.transactions.filter(x=>x.type==='income').reduce((s,x)=>s+Number(x.amount||0),0),exp=data.money.transactions.filter(x=>x.type==='expense').reduce((s,x)=>s+Number(x.amount||0),0),sav=data.money.transactions.filter(x=>x.type==='saving').reduce((s,x)=>s+Number(x.amount||0),0),bal=inc-exp-sav;
+ let cats={Food:0,Transport:0,Shopping:0,Education:0,Others:0};data.money.transactions.filter(x=>x.type==='expense').forEach(x=>cats[x.category||'Others']=(cats[x.category||'Others']||0)+Number(x.amount||0));let maxCat=Math.max(1,...Object.values(cats));
+ document.getElementById('page-money').innerHTML=`<div class="head"><div><h2>Money</h2><div class="small">Track income, expenses, savings and your monthly budget in one place.</div></div><div class="row"><button class="btn" onclick="editMoneySettings()">Savings / Budget</button><button class="btn primary" onclick="addMoney()">+ Transaction</button></div></div><div class="grid"><div class="card span-12"><div class="kpis"><div class="kpi"><div class="label">INCOME</div><div class="value money-positive">₹${money(inc)}</div></div><div class="kpi"><div class="label">EXPENSE</div><div class="value money-negative">₹${money(exp)}</div></div><div class="kpi"><div class="label">SAVINGS</div><div class="value money-positive">₹${money(sav)}</div></div><div class="kpi"><div class="label">BALANCE</div><div class="value">₹${money(bal)}</div></div></div></div><div class="card span-7"><div class="head"><h2>Transactions</h2><span class="small">${data.money.transactions.length} entries</span></div><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th>Amount</th><th></th></tr></thead><tbody>${data.money.transactions.slice().reverse().map((x,i)=>`<tr><td>${x.date}</td><td>${esc(x.type)}</td><td>${esc(x.category||'—')}</td><td>${esc(x.note||'')}</td><td class="${x.type==='expense'?'money-negative':'money-positive'}">₹${money(x.amount)}</td><td><button class="btn small" onclick="editMoney('${x.id}')">Edit</button><button class="btn small danger" onclick="removeMoney(${data.money.transactions.length-1-i})">×</button></td></tr>`).join('')||'<tr><td colspan="6"><div class="empty">No transactions yet.</div></td></tr>'}</tbody></table></div><div class="card span-5"><div class="head"><h2>Savings goal</h2><span class="small">₹${money(data.money.savingsGoal)}</span></div><div class="big">₹${money(sav)}</div><div class="small">saved toward your goal</div><div class="bar" style="margin:12px 0"><i style="width:${pct(sav,data.money.savingsGoal||1)}%"></i></div><div class="row between"><span class="small">Budget</span><b>₹${money(data.money.budget)}</b></div><div class="row between" style="margin-top:7px"><span class="small">Balance</span><b>₹${money(bal)}</b></div></div><div class="card span-7"><div class="head"><h2>Expense categories</h2><span class="small">This month</span></div><div class="stack">${Object.entries(cats).map(([k,v])=>`<div><div class="row between"><span>${k}</span><span class="mini">₹${money(v)}</span></div><div class="bar" style="margin-top:5px"><i style="width:${pct(v,maxCat)}%"></i></div></div>`).join('')}</div></div><div class="card span-5"><div class="head"><h2>Money flow</h2></div><div class="stack"><div class="item"><div class="row between"><span>Income</span><b class="money-positive">+₹${money(inc)}</b></div></div><div class="item"><div class="row between"><span>Expenses</span><b class="money-negative">−₹${money(exp)}</b></div></div><div class="item"><div class="row between"><span>Savings</span><b class="money-positive">₹${money(sav)}</b></div></div></div></div></div>`;
+}
+
+function renderConnections(){
+ let nodes=allEntities();
+ document.getElementById('page-connections').innerHTML=`<div class="head"><div><h2>Connection map</h2><div class="small">A real relationship view of your system. Connections are editable everywhere.</div></div><button class="btn primary" onclick="connectPicker()">+ Connect</button></div><div class="grid"><div class="card span-7"><div class="list">${data.goals.map(g=>`<div class="connection"><div class="node-type">${g.type.toUpperCase()} GOAL</div><div class="node-title">${esc(g.title)}</div><div class="linkchips">${linksTo(g.id).map(id=>`<span class="chip">${kindOf(id)} · ${esc(titleOf(id))}</span>`).join('')||'<span class="mini">Nothing connected</span>'}</div></div>`).join('')||'<div class="empty">Create goals and connect actions.</div>'}</div></div><div class="card span-5"><h2>Relationship list</h2><div class="list" style="margin-top:10px">${data.links.map(l=>`<div class="item"><div class="mini">${kindOf(l.from)} → ${kindOf(l.to)}</div><b>${esc(titleOf(l.from))}</b> <span class="muted">→</span> <b>${esc(titleOf(l.to))}</b><div style="margin-top:6px"><button class="btn small danger" onclick="data.links=data.links.filter(x=>x.id!=='${l.id}');save();renderPage('connections')">Remove</button></div></div>`).join('')||'<div class="empty">No relationships yet.</div>'}</div></div></div>`;
+}
+function renderStats(){
+ let s=periodStats(),week=Array.from({length:7},(_,i)=>add(weekStart(state.date),i)),avgSleep=data.sleep.entries.slice(-7).reduce((a,x)=>a+sleepDuration(x.bed,x.wake),0)/Math.max(1,Math.min(7,data.sleep.entries.length));
+ document.getElementById('page-stats').innerHTML=`<div class="grid"><div class="card span-12"><h2>System dashboard</h2><div class="kpis" style="margin-top:12px"><div class="kpi"><div class="label">WEEKLY HABIT CHECKS</div><div class="value">${s.hw}</div></div><div class="kpi"><div class="label">WEEKLY TASKS</div><div class="value">${s.tw}</div></div><div class="kpi"><div class="label">SLEEP AVG</div><div class="value">${avgSleep.toFixed(1)}h</div></div><div class="kpi"><div class="label">CONNECTIONS</div><div class="value">${data.links.length}</div></div></div></div><div class="card span-7"><div class="head"><h2>7-day execution</h2></div>${week.map(d=>{let z=iso(d),h=data.habits.filter(x=>isDone(x,z)).length,t=data.tasks.filter(x=>x.completedAt===z).length;return `<div style="margin:10px 0"><div class="row between"><span>${d.toLocaleDateString(undefined,{weekday:'short'})}</span><span>${h} habits · ${t} tasks</span></div><div class="bar" style="margin-top:5px"><i style="width:${pct(h+t,Math.max(1,data.habits.length+data.tasks.length))}%"></i></div></div>`}).join('')}</div><div class="card span-5"><h2>Signals</h2><div class="stack" style="margin-top:12px"><div class="item">Unscheduled tasks <b>${data.tasks.filter(t=>!t.scheduledDate&&!t.done).length}</b></div><div class="item">Unconnected goals <b>${data.goals.filter(g=>!linksTo(g.id).length).length}</b></div><div class="item">Inbox items <b>${data.inbox.length}</b></div><div class="item">Goals with targets <b>${data.goals.filter(g=>g.target>0).length}/${data.goals.length}</b></div></div></div></div>`;
+}
+function renderNotes(){
+ let entries=Object.entries(data.notes);
+ document.getElementById('page-notes').innerHTML=`<div class="head"><div><h2>Notes</h2><div class="small">Capture context and connect important notes to the system.</div></div><button class="btn primary" onclick="addNote()">+ Note</button></div><div class="grid">${entries.map(([id,n])=>`<div class="card span-6"><div class="head"><h2>${esc(n.title||'Untitled')}</h2><button class="btn small danger" onclick="delete data.notes['${id}'];save();renderPage('notes')">×</button></div><div style="white-space:pre-wrap">${esc(n.body||'')}</div><div class="row" style="margin-top:12px">${connectBtn(id)}</div></div>`).join('')||'<div class="card span-12"><div class="empty">No notes yet.</div></div>'}</div>`;
+}
+
+function renderPage(t){({today:renderToday,inbox:renderInbox,areas:renderAreas,goals:renderGoals,projects:renderProjects,tasks:renderTasks,habits:renderHabits,study:renderStudy,sleep:renderSleep,skills:renderSkills,money:renderMoney,connections:renderConnections,stats:renderStats,notes:renderNotes}[t]||renderToday)()}
+
+function quickCapture(){openModal('Quick capture',`<input id="captureText" style="width:100%;border:1px solid var(--line);padding:11px;border-radius:10px" placeholder="Anything on your mind…"><button class="btn primary" style="margin-top:10px;width:100%" onclick="data.inbox.unshift({id:uid(),text:document.getElementById('captureText').value,createdAt:new Date().toLocaleString()});save();closeModal();renderPage('inbox');toast('Captured')">Add to inbox</button>`)}
+window.convertInbox=i=>{let x=data.inbox[i];data.tasks.push({id:uid(),name:x.text,done:false,status:'open',priority:2,duration:0,scheduledDate:iso(state.date),projectId:'',areaId:''});data.inbox.splice(i,1);save();renderPage('inbox');toast('Converted to task')}
+
+function quickAddTask(projectId=''){openModal('New task',`<div class="form"><input id="tn" placeholder="Task name" style="flex:1"><select id="tp"><option value="1">P1</option><option value="2" selected>P2</option><option value="3">P3</option></select><input id="td" type="number" placeholder="Minutes" value="30"><input id="tsd" type="date" value="${iso(state.date)}"><select id="ta"><option value="">Area</option>${data.areas.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select><select id="tproj"><option value="">Project</option>${data.projects.map(p=>`<option value="${p.id}" ${p.id===projectId?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><button class="btn primary" style="margin-top:12px;width:100%" onclick="data.tasks.push({id:uid(),name:document.getElementById('tn').value,done:false,status:'open',priority:+document.getElementById('tp').value,duration:+document.getElementById('td').value||0,scheduledDate:document.getElementById('tsd').value,areaId:document.getElementById('ta').value,projectId:document.getElementById('tproj').value});save();closeModal();renderPage(state.tab);toast('Task added')">Create task</button>`)}
+function addHabit(){openModal('New habit',`<div class="form"><input id="hn" placeholder="Habit name" style="flex:1"><input id="hd" type="number" placeholder="Minutes" value="20"><select id="ha"><option value="">Area</option>${data.areas.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select><select id="hc"><option>daily</option><option>weekly</option></select></div><button class="btn primary" style="margin-top:12px;width:100%" onclick="data.habits.push({id:uid(),name:document.getElementById('hn').value,areaId:document.getElementById('ha').value,cadence:document.getElementById('hc').value,priority:2,duration:+document.getElementById('hd').value||0,history:{}});save();closeModal();renderPage('habits');toast('Habit added')">Create habit</button>`)}
+function addArea(){openModal('New area',`<div class="form"><input id="an" placeholder="Area name" style="flex:1"><input id="ad" placeholder="Description" style="flex:1"></div><button class="btn primary" style="margin-top:12px;width:100%" onclick="data.areas.push({id:uid(),name:document.getElementById('an').value,desc:document.getElementById('ad').value});save();closeModal();renderPage('areas')">Create area</button>`)}
+function addGoal(){openModal('New goal',`<div class="form"><input id="gn" placeholder="Goal title" style="flex:1"><select id="gm"><option value="completion">Completion</option><option value="count">Count</option><option value="duration">Duration</option><option value="amount">Amount</option><option value="quantity">Quantity</option><option value="average">Average</option></select><input id="gtarget" type="number" value="10" min="1"><select id="ga">${data.areas.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select></div><textarea id="gwhy" placeholder="Why does this matter?" style="margin-top:8px"></textarea><button class="btn primary" style="margin-top:10px;width:100%" onclick="data.goals.push({id:uid(),title:document.getElementById('gn').value,type:'overall',metric:document.getElementById('gm').value,target:+document.getElementById('gtarget').value||1,progress:0,areaId:document.getElementById('ga').value,why:document.getElementById('gwhy').value,parentId:null});save();closeModal();renderPage(state.tab);toast('Goal created')">Create goal</button>`)}
+function editGoal(id){let g=data.goals.find(x=>x.id===id);openModal('Edit goal',`<div class="form"><input id="eg" value="${esc(g.title)}" style="flex:1"><input id="et" type="number" value="${g.target}"><select id="ea">${data.areas.map(a=>`<option value="${a.id}" ${a.id===g.areaId?'selected':''}>${esc(a.name)}</option>`).join('')}</select></div><textarea id="ew" style="margin-top:8px">${esc(g.why||'')}</textarea><button class="btn primary" style="margin-top:10px;width:100%" onclick="g.title=document.getElementById('eg').value;g.target=+document.getElementById('et').value||1;g.areaId=document.getElementById('ea').value;g.why=document.getElementById('ew').value;save();closeModal();renderPage(state.tab)">Save</button>`)}
+function addProject(){openModal('New project',`<div class="form"><input id="pn" placeholder="Project name" style="flex:1"><select id="pa">${data.areas.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select></div><button class="btn primary" style="margin-top:12px;width:100%" onclick="data.projects.push({id:uid(),name:document.getElementById('pn').value,areaId:document.getElementById('pa').value,status:'active'});save();closeModal();renderPage('projects')">Create project</button>`)}
+function editProject(id){let p=data.projects.find(x=>x.id===id);openModal('Edit project',`<div class="form"><input id="ep" value="${esc(p.name)}" style="flex:1"></div><button class="btn primary" style="margin-top:12px" onclick="p.name=document.getElementById('ep').value;save();closeModal();renderPage('projects')">Save</button>`)}
+function addChapter(){openModal('Add study chapter',`<div class="form"><input id="cn" placeholder="Chapter / topic" style="flex:1"><input id="ct" type="number" value="1" min="1"></div><button class="btn primary" style="margin-top:12px;width:100%" onclick="data.study.chapters.push({id:uid(),name:document.getElementById('cn').value,total:+document.getElementById('ct').value||1,done:0});save();closeModal();renderPage('study')">Add chapter</button>`)}
+function chapterStep(id,n){let c=data.study.chapters.find(x=>x.id===id);c.done=Math.min(c.total,c.done+n);save();renderPage('study')}
+function logStudy(){openModal('Log study',`<div class="form"><input id="sm" type="number" value="30" min="1"><button class="btn primary" onclick="let n=+document.getElementById('sm').value||0;data.study.sessions['${iso(state.date)}']=(data.study.sessions['${iso(state.date)}']||0)+n;save();closeModal();renderPage('study')">Add minutes</button></div>`)}
+function saveSleep(){let d=iso(state.date),bed=document.getElementById('bed').value,wake=document.getElementById('wake').value;data.sleep.goal=+document.getElementById('sleepGoal').value||8;data.sleep.entries=data.sleep.entries.filter(x=>x.date!==d);data.sleep.entries.push({date:d,bed,wake});save();renderPage('sleep');toast('Sleep saved')}
+function setSkill(){openModal('Current skill',`<input id="sk" style="width:100%" placeholder="e.g. Excel, CapCut, Data Analysis"><button class="btn primary" style="margin-top:10px;width:100%" onclick="let n=document.getElementById('sk').value;data.skills.current={id:uid(),name:n,practice:0,output:0};save();closeModal();renderPage('skills')">Set skill</button>`)}
+function logSkill(){if(!data.skills.current)return setSkill();openModal('Log skill work',`<div class="form"><input id="sp" type="number" value="30" placeholder="Practice min"><input id="so" type="number" value="1" placeholder="Outputs"><button class="btn primary" onclick="data.skills.current.practice+=+document.getElementById('sp').value||0;data.skills.current.output+=+document.getElementById('so').value||0;save();closeModal();renderPage('skills')">Log</button></div>`)}
+function editTask(id){let t=data.tasks.find(x=>x.id===id);if(!t)return;openModal('Edit task',`<div class="form"><input id="etn" value="${esc(t.name)}" style="flex:1"><select id="etp"><option value="1" ${t.priority===1?'selected':''}>P1</option><option value="2" ${t.priority===2?'selected':''}>P2</option><option value="3" ${t.priority===3?'selected':''}>P3</option></select><input id="etd" type="number" value="${t.duration||0}"><input id="etsd" type="date" value="${t.scheduledDate||iso(state.date)}"></div><div class="row" style="margin-top:12px"><button class="btn primary" onclick="t.name=document.getElementById('etn').value;t.priority=+document.getElementById('etp').value;t.duration=+document.getElementById('etd').value||0;t.scheduledDate=document.getElementById('etsd').value;save();closeModal();renderPage(state.tab)">Save</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function editHabit(id){let h=data.habits.find(x=>x.id===id);if(!h)return;openModal('Edit habit',`<div class="form"><input id="ehn" value="${esc(h.name)}" style="flex:1"><input id="ehd" type="number" value="${h.duration||0}"><select id="eha">${data.areas.map(a=>`<option value="${a.id}" ${a.id===h.areaId?'selected':''}>${esc(a.name)}</option>`).join('')}</select><select id="ehc"><option ${h.cadence==='daily'?'selected':''}>daily</option><option ${h.cadence==='weekly'?'selected':''}>weekly</option></select></div><div class="row" style="margin-top:12px"><button class="btn primary" onclick="h.name=document.getElementById('ehn').value;h.duration=+document.getElementById('ehd').value||0;h.areaId=document.getElementById('eha').value;h.cadence=document.getElementById('ehc').value;save();closeModal();renderPage('habits')">Save</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function editMoney(id){let t=data.money.transactions.find(x=>x.id===id);if(!t)return;openModal('Edit transaction',`<div class="form"><input id="ema" type="number" value="${t.amount||0}"><select id="emt"><option ${t.type==='income'?'selected':''}>income</option><option ${t.type==='expense'?'selected':''}>expense</option><option ${t.type==='saving'?'selected':''}>saving</option></select><select id="emc"><option ${t.category==='Food'?'selected':''}>Food</option><option ${t.category==='Transport'?'selected':''}>Transport</option><option ${t.category==='Shopping'?'selected':''}>Shopping</option><option ${t.category==='Education'?'selected':''}>Education</option><option ${t.category==='Others'?'selected':''}>Others</option></select><input id="emn" value="${esc(t.note||'')}" style="flex:1"></div><div class="row" style="margin-top:12px"><button class="btn primary" onclick="t.amount=+document.getElementById('ema').value||0;t.type=document.getElementById('emt').value;t.category=document.getElementById('emc').value;t.note=document.getElementById('emn').value;save();closeModal();renderPage('money')">Save</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function addMoney(){openModal('Transaction',`<div class="form"><select id="mt"><option>income</option><option>expense</option><option>saving</option></select><input id="ma" type="number" placeholder="Amount" min="0"><select id="mc"><option>Food</option><option>Transport</option><option>Shopping</option><option>Education</option><option>Others</option></select><input id="mn" placeholder="Note" style="flex:1"></div><div class="row" style="margin-top:12px"><button class="btn primary" style="flex:1" onclick="let a=+document.getElementById('ma').value||0;if(a<=0)return toast('Enter an amount');data.money.transactions.push({id:uid(),date:'${iso(state.date)}',type:document.getElementById('mt').value,category:document.getElementById('mc').value,amount:a,note:document.getElementById('mn').value});save();closeModal();renderPage('money');toast('Transaction saved')">Save transaction</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function removeMoney(i){data.money.transactions.splice(i,1);save();renderPage('money');toast('Transaction removed')}
+function editMoneySettings(){openModal('Savings & budget',`<div class="form"><input id="sg" type="number" value="${data.money.savingsGoal}" placeholder="Savings goal"><input id="bu" type="number" value="${data.money.budget}" placeholder="Monthly budget"><button class="btn primary" onclick="data.money.savingsGoal=+document.getElementById('sg').value||0;data.money.budget=+document.getElementById('bu').value||0;save();closeModal();renderPage('money')">Save</button></div>`)}
+function addNote(){openModal('New note',`<input id="nt" style="width:100%" placeholder="Title"><textarea id="nb" placeholder="Write your note…" style="margin-top:8px"></textarea><button class="btn primary" style="margin-top:10px;width:100%" onclick="let id=uid();data.notes[id]={title:document.getElementById('nt').value,body:document.getElementById('nb').value};save();closeModal();renderPage('notes')">Save note</button>`)}
+function connectPicker(){let opts=allEntities();openModal('Choose something to connect',`<div class="list">${opts.map(x=>`<button class="item" style="text-align:left" onclick="closeModal();connect('${x.id}')"><b>${esc(x.name||x.title)}</b><span class="mini"> · ${kindOf(x.id)}</span></button>`).join('')}</div>`)}
+function backup(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ts-personal-os-v4-backup.json';a.click()}
+function settings(){openModal('TS Settings',`<div class="stack"><button class="btn" onclick="backup()">Export backup</button><label class="btn">Import backup<input id="restore" type="file" accept=".json" style="display:none"></label><button class="btn" onclick="undo()">Undo last delete</button><button class="btn danger" onclick="if(confirm('Erase all TS data?')){data=defaults();save();closeModal();go('today')}">Erase all data</button><div class="small">Your data is stored locally in this browser. Export before moving devices.</div></div>`);setTimeout(()=>{let r=document.getElementById('restore');r.onchange=e=>{let f=e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=()=>{try{data=normalize(JSON.parse(rd.result));save();closeModal();go(state.tab);toast('Backup restored')}catch{toast('Invalid backup')}};rd.readAsText(f)}} ,0)}
+// Expose action handlers used by inline buttons. The app is wrapped in an IIFE,
+// so these functions must be attached to window for onclick="..." handlers to reach them.
+Object.assign(window,{
+  nav,save,addArea,addGoal,addProject,addHabit,addChapter,quickCapture,quickAddTask,setQuickMode,dashAddQuick,
+  logStudy,saveSleep,setSkill,logSkill,addMoney,removeMoney,editMoneySettings,addNote,
+  connectPicker,backup,settings,editGoal,editProject,chapterStep,
+  renderPage,renderToday,renderInbox,renderAreas,renderGoals,
+  renderProjects,renderTasks,renderHabits,renderStudy,renderSleep,renderSkills,renderMoney,
+  renderConnections,renderStats,renderNotes
+});
+
+document.getElementById('settingsBtn').onclick=settings;
+document.getElementById('searchBtn').onclick=()=>{document.getElementById('search').classList.add('open');document.getElementById('searchInput').focus()};
+document.getElementById('search').onclick=e=>{if(e.target.id==='search')e.currentTarget.classList.remove('open')};
+document.getElementById('searchInput').oninput=e=>{let q=e.target.value.toLowerCase();let all=allEntities().filter(x=>(x.name||x.title||'').toLowerCase().includes(q));document.getElementById('results').innerHTML=q?all.slice(0,30).map(x=>`<div class="result" onclick="document.getElementById('search').classList.remove('open');connect('${x.id}')"><b>${esc(x.name||x.title)}</b><span class="mini"> · ${kindOf(x.id)}</span></div>`).join('')||'<div class="empty">No matches.</div>':''};
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.getElementById('searchBtn').click()}});
+// Global bridge for inline button handlers. The app uses an IIFE for state safety,
+// so expose the action functions and live state explicitly to HTML onclick handlers.
+Object.assign(window, {
+  defaults, normalize, save, toast, openModal, areaName, goalName, projectName,
+  isDone, linked, linksTo, linksFrom, entity, kindOf, titleOf, pct, priority,
+  nav, datebar, actionBtn, connectBtn, taskCard, periodStats, sleepDuration,
+  renderToday, goalFlow, metricLabel, goalPeriodDates, goalProgress, goalPct,
+  renderInbox, renderAreas, renderGoals, renderProjects,
+  renderTasks, renderHabits, renderStudy, renderSleep, renderSkills, renderMoney,
+  renderConnections, renderStats, renderNotes, renderPage, quickCapture,
+  quickAddTask, addHabit, addArea, addGoal, editGoal, addProject, editProject,
+  addChapter, chapterStep, logStudy, saveSleep, setSkill, logSkill, addMoney,
+  removeMoney, editMoneySettings, editTask, editHabit, editMoney, addNote, connectPicker, backup, settings,
+  uid, iso, day, setGoalFilter
+});
+Object.defineProperty(window, 'data', { configurable:true, get:()=>data, set:v=>{data=v;} });
+Object.defineProperty(window, 'state', { configurable:true, get:()=>state, set:v=>{Object.assign(state,v||{});} });
+
+renderTab(tabFromHash());
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
+
+</body>
+</html>
